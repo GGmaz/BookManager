@@ -8,4 +8,5 @@ import (
 
 func RegisterVersion(router *gin.Engine, ctx context.Context) {
 	registerBook(router, ctx)
+	registerBookCollection(router, ctx)
 }

@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/GGmaz/BookManager/internal/model"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -30,7 +31,7 @@ func NewBook() (*BookRepository, error) {
 		return nil, err
 	}
 	repo.db = db
-	err = repo.db.AutoMigrate()
+	err = repo.db.AutoMigrate(&model.BookCollection{}, &model.Book{})
 	if err != nil {
 		return nil, err
 	}

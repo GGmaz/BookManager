@@ -1,11 +1,13 @@
 package repo
 
 import (
+	"context"
 	"github.com/GGmaz/BookManager/internal/model"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
+	"time"
 )
 
 type BookRepository struct {
@@ -47,4 +49,54 @@ func (repo *BookRepository) Close() error {
 
 	db.Close()
 	return nil
+}
+
+func (repo *BookRepository) Create(ctx context.Context, title string, author string, date time.Time, edition string, description string, genre string) int64 {
+	book := model.Book{
+		Title:         title,
+		Author:        author,
+		PublishedDate: date,
+		Edition:       edition,
+		Description:   description,
+		Genre:         genre,
+	}
+
+	repo.db.Create(&book)
+	return book.ID
+}
+
+func (repo *BookRepository) GetAll(ctx context.Context) []model.Book {
+	var books []model.Book
+	repo.db.Find(&books)
+
+	return books
+}
+
+func (repo *BookRepository) GetByID(ctx context.Context, id int64) model.Book {
+	var book model.Book
+	repo.db.First(&book, id)
+
+	return book
+}
+
+func (repo *BookRepository) Update(ctx context.Context, id int64, title string, author string, date time.Time, edition string, description string, genre string) model.Book {
+	var book model.Book
+	repo.db.First(&book, id)
+
+	book.Title = title
+	book.Author = author
+	book.PublishedDate = date
+	book.Edition = edition
+	book.Description = description
+	book.Genre = genre
+
+	repo.db.Save(&book)
+	return book
+}
+
+func (repo *BookRepository) Delete(ctx context.Context, id int64) {
+	var book model.Book
+	repo.db.First(&book, id)
+
+	repo.db.Delete(&book)
 }

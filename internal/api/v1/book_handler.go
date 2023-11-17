@@ -15,13 +15,13 @@ type BookHandler struct {
 	ctx         context.Context
 }
 
-func registerBook(router *gin.Engine, ctx context.Context) {
+func registerBookREST(router *gin.Engine, ctx context.Context) {
 	bookService, err := service.NewBook()
 	if err != nil {
-		log.WithFields(log.Fields{"service_name": "book-service", "method_name": "registerBook"}).Error("Error creating book service.")
+		log.WithFields(log.Fields{"service_name": "book-service", "method_name": "registerBookREST"}).Error("Error creating book service: ", err)
 		panic("Error creating book service.")
 	}
-	log.WithFields(log.Fields{"service_name": "book-service", "method_name": "registerBook"}).Info("Successfully created book handler.")
+	log.WithFields(log.Fields{"service_name": "book-service", "method_name": "registerBookREST"}).Info("Successfully created book handler.")
 	h := &BookHandler{
 		bookService: bookService,
 		ctx:         ctx,

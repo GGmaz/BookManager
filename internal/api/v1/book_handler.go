@@ -42,7 +42,7 @@ func (handler *BookHandler) Create(c *gin.Context) {
 		return
 	}
 
-	id := handler.bookService.Create(handler.ctx, book)
+	id := handler.bookService.Create(book)
 
 	if id == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "There was error while creating book."})
@@ -54,7 +54,7 @@ func (handler *BookHandler) Create(c *gin.Context) {
 }
 
 func (handler *BookHandler) GetAll(c *gin.Context) {
-	books := handler.bookService.GetAll(handler.ctx)
+	books := handler.bookService.GetAll()
 
 	c.JSON(http.StatusOK, gin.H{"books": books})
 }
@@ -71,7 +71,7 @@ func (handler *BookHandler) Update(c *gin.Context) {
 		return
 	}
 
-	errMessage := handler.bookService.Update(handler.ctx, book.Id, book)
+	errMessage := handler.bookService.Update(book.Id, book)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
@@ -88,7 +88,7 @@ func (handler *BookHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	errMessage := handler.bookService.Delete(handler.ctx, req.Id)
+	errMessage := handler.bookService.Delete(req.Id)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})

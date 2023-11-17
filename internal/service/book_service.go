@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"github.com/GGmaz/BookManager/internal/model"
 	"github.com/GGmaz/BookManager/internal/repo"
 	"github.com/GGmaz/BookManager/pkg/requests"
@@ -24,30 +23,30 @@ func NewBook() (*BookService, error) {
 	return s, nil
 }
 
-func (s *BookService) Create(ctx context.Context, book requests.CreateBookRequest) int64 {
-	return s.bookRepo.Create(ctx, book.Title, book.Author, book.PublishedDate, book.Edition, book.Description, book.Genre)
+func (s *BookService) Create(book requests.CreateBookRequest) int64 {
+	return s.bookRepo.Create(book.Title, book.Author, book.PublishedDate, book.Edition, book.Description, book.Genre)
 }
 
-func (s *BookService) GetAll(ctx context.Context) []model.Book {
-	return s.bookRepo.GetAll(ctx)
+func (s *BookService) GetAll() []model.Book {
+	return s.bookRepo.GetAll()
 }
 
-func (s *BookService) Update(ctx context.Context, id int64, book requests.UpdateBookRequest) string {
-	if s.bookRepo.GetByID(ctx, id).ID == 0 {
+func (s *BookService) Update(id int64, book requests.UpdateBookRequest) string {
+	if s.bookRepo.GetByID(id).ID == 0 {
 		return "Book not found"
 	}
-	updatedBook := s.bookRepo.Update(ctx, id, book.Title, book.Author, book.PublishedDate, book.Edition, book.Description, book.Genre)
+	updatedBook := s.bookRepo.Update(id, book.Title, book.Author, book.PublishedDate, book.Edition, book.Description, book.Genre)
 	if updatedBook.ID == 0 {
 		return "There was an error updating the book"
 	}
 	return ""
 }
 
-func (s *BookService) Delete(ctx context.Context, id int64) string {
-	if s.bookRepo.GetByID(ctx, id).ID == 0 {
+func (s *BookService) Delete(id int64) string {
+	if s.bookRepo.GetByID(id).ID == 0 {
 		return "Book not found"
 	}
-	s.bookRepo.Delete(ctx, id)
+	s.bookRepo.Delete(id)
 	return ""
 
 }

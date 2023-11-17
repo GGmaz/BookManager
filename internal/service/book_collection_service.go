@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"github.com/GGmaz/BookManager/internal/model"
 	"github.com/GGmaz/BookManager/internal/repo"
 	"github.com/GGmaz/BookManager/pkg/requests"
@@ -30,48 +29,53 @@ func NewBookCollection() (*BookCollectionService, error) {
 	return s, nil
 }
 
-func (s *BookCollectionService) Create(ctx context.Context, collection requests.CreateBookCollectionRequest) int64 {
-	return s.bookCollectionRepo.Create(ctx, collection.Name)
+func (s *BookCollectionService) Create(collection requests.CreateBookCollectionRequest) int64 {
+	return s.bookCollectionRepo.Create(collection.Name)
 }
 
-func (s *BookCollectionService) GetAll(ctx context.Context) []model.BookCollection {
-	return s.bookCollectionRepo.GetAll(ctx)
+func (s *BookCollectionService) GetAll() []model.BookCollection {
+	return s.bookCollectionRepo.GetAll()
 }
 
-func (s *BookCollectionService) GetBooksForCollection(ctx context.Context, id int64) ([]model.Book, string) {
-	if s.bookCollectionRepo.GetByID(ctx, id).ID == 0 {
+func (s *BookCollectionService) GetBooksForCollection(id int64) ([]model.Book, string) {
+	if s.bookCollectionRepo.GetByID(id).ID == 0 {
 		return nil, "Collection not found"
 	}
-	return s.bookCollectionRepo.GetBooksForCollection(ctx, id), ""
+	return s.bookCollectionRepo.GetBooksForCollection(id), ""
 }
 
-func (s *BookCollectionService) AddBookToCollection(ctx context.Context, collectionId, bookId int64) string {
-	if s.bookCollectionRepo.GetByID(ctx, collectionId).ID == 0 {
+func (s *BookCollectionService) AddBookToCollection(collectionId, bookId int64) string {
+	if s.bookCollectionRepo.GetByID(collectionId).ID == 0 {
 		return "Collection not found"
 	}
-	if s.bookRepo.GetByID(ctx, bookId).ID == 0 {
+	if s.bookRepo.GetByID(bookId).ID == 0 {
 		return "Book not found"
 	}
 
-	s.bookCollectionRepo.AddBookToCollection(ctx, collectionId, bookId)
+	s.bookCollectionRepo.AddBookToCollection(collectionId, bookId)
 	return ""
 }
 
-func (s *BookCollectionService) Delete(ctx context.Context, id int64) string {
-	if s.bookCollectionRepo.GetByID(ctx, id).ID == 0 {
+func (s *BookCollectionService) Delete(id int64) string {
+	if s.bookCollectionRepo.GetByID(id).ID == 0 {
 		return "Collection not found"
 	}
-	s.bookCollectionRepo.Delete(ctx, id)
+
+	for _, book := range s.bookCollectionRepo.GetBooksForCollection(id) {
+		s.bookCollectionRepo.RemoveBookFromCollection(book.ID)
+	}
+
+	s.bookCollectionRepo.Delete(id)
 	return ""
 }
 
-func (s *BookCollectionService) RemoveBookFromCollection(ctx context.Context, collectionId, bookId int64) string {
-	if s.bookCollectionRepo.GetByID(ctx, collectionId).ID == 0 {
+func (s *BookCollectionService) RemoveBookFromCollection(collectionId, bookId int64) string {
+	if s.bookCollectionRepo.GetByID(collectionId).ID == 0 {
 		return "Collection not found"
 	}
-	if s.bookRepo.GetByID(ctx, bookId).ID == 0 {
+	if s.bookRepo.GetByID(bookId).ID == 0 {
 		return "Book not found"
 	}
-	s.bookCollectionRepo.RemoveBookFromCollection(ctx, collectionId, bookId)
+	s.bookCollectionRepo.RemoveBookFromCollection(bookId)
 	return ""
 }

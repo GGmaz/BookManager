@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"context"
 	"github.com/GGmaz/BookManager/internal/model"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -41,8 +40,8 @@ func NewBook() (*BookRepository, error) {
 	return repo, nil
 }
 
-func (repo *BookRepository) Close() error {
-	db, err := repo.db.DB()
+func (r *BookRepository) Close() error {
+	db, err := r.db.DB()
 	if err != nil {
 		return err
 	}
@@ -51,7 +50,7 @@ func (repo *BookRepository) Close() error {
 	return nil
 }
 
-func (repo *BookRepository) Create(ctx context.Context, title string, author string, date time.Time, edition string, description string, genre string) int64 {
+func (r *BookRepository) Create(title string, author string, date time.Time, edition string, description string, genre string) int64 {
 	book := model.Book{
 		Title:         title,
 		Author:        author,
@@ -61,27 +60,27 @@ func (repo *BookRepository) Create(ctx context.Context, title string, author str
 		Genre:         genre,
 	}
 
-	repo.db.Create(&book)
+	r.db.Create(&book)
 	return book.ID
 }
 
-func (repo *BookRepository) GetAll(ctx context.Context) []model.Book {
+func (r *BookRepository) GetAll() []model.Book {
 	var books []model.Book
-	repo.db.Find(&books)
+	r.db.Find(&books)
 
 	return books
 }
 
-func (repo *BookRepository) GetByID(ctx context.Context, id int64) model.Book {
+func (r *BookRepository) GetByID(id int64) model.Book {
 	var book model.Book
-	repo.db.First(&book, id)
+	r.db.First(&book, id)
 
 	return book
 }
 
-func (repo *BookRepository) Update(ctx context.Context, id int64, title string, author string, date time.Time, edition string, description string, genre string) model.Book {
+func (r *BookRepository) Update(id int64, title string, author string, date time.Time, edition string, description string, genre string) model.Book {
 	var book model.Book
-	repo.db.First(&book, id)
+	r.db.First(&book, id)
 
 	book.Title = title
 	book.Author = author
@@ -90,13 +89,13 @@ func (repo *BookRepository) Update(ctx context.Context, id int64, title string, 
 	book.Description = description
 	book.Genre = genre
 
-	repo.db.Save(&book)
+	r.db.Save(&book)
 	return book
 }
 
-func (repo *BookRepository) Delete(ctx context.Context, id int64) {
+func (r *BookRepository) Delete(id int64) {
 	var book model.Book
-	repo.db.First(&book, id)
+	r.db.First(&book, id)
 
-	repo.db.Delete(&book)
+	r.db.Delete(&book)
 }

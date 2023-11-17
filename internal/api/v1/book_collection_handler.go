@@ -40,7 +40,7 @@ func (handler *BookCollectionHandler) Create(c *gin.Context) {
 		return
 	}
 
-	id := handler.bookCollectionService.Create(handler.ctx, bookCollection)
+	id := handler.bookCollectionService.Create(bookCollection)
 
 	if id == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "There was error while creating book collection."})
@@ -52,7 +52,7 @@ func (handler *BookCollectionHandler) Create(c *gin.Context) {
 }
 
 func (handler *BookCollectionHandler) GetAll(c *gin.Context) {
-	bookCollections := handler.bookCollectionService.GetAll(handler.ctx)
+	bookCollections := handler.bookCollectionService.GetAll()
 
 	c.JSON(http.StatusOK, gin.H{"bookCollections": bookCollections})
 }
@@ -64,7 +64,7 @@ func (handler *BookCollectionHandler) GetBooksForCollection(c *gin.Context) {
 		return
 	}
 
-	books, errMessage := handler.bookCollectionService.GetBooksForCollection(handler.ctx, req.Id)
+	books, errMessage := handler.bookCollectionService.GetBooksForCollection(req.Id)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
@@ -81,7 +81,7 @@ func (handler *BookCollectionHandler) AddBookToCollection(c *gin.Context) {
 		return
 	}
 
-	errMessage := handler.bookCollectionService.AddBookToCollection(handler.ctx, req.CollectionId, req.BookId)
+	errMessage := handler.bookCollectionService.AddBookToCollection(req.CollectionId, req.BookId)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
@@ -98,7 +98,7 @@ func (handler *BookCollectionHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	errMessage := handler.bookCollectionService.Delete(handler.ctx, req.Id)
+	errMessage := handler.bookCollectionService.Delete(req.Id)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
@@ -115,7 +115,7 @@ func (handler *BookCollectionHandler) RemoveBookFromCollection(c *gin.Context) {
 		return
 	}
 
-	errMessage := handler.bookCollectionService.RemoveBookFromCollection(handler.ctx, req.CollectionId, req.BookId)
+	errMessage := handler.bookCollectionService.RemoveBookFromCollection(req.CollectionId, req.BookId)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})

@@ -32,10 +32,15 @@ func (r *BookCollectionRepository) Create(name string) int64 {
 	return collection.ID
 }
 
-func (r *BookCollectionRepository) GetAll() []model.BookCollection {
+func (r *BookCollectionRepository) GetAll(page, pageSize int) ([]model.BookCollection, int64) {
 	var collections []model.BookCollection
-	r.db.Find(&collections)
-	return collections
+	var total int64
+
+	r.db.Model(&model.BookCollection{}).Count(&total)
+	offset := (page - 1) * pageSize
+	r.db.Offset(offset).Limit(pageSize).Find(&collections)
+
+	return collections, total
 }
 
 func (r *BookCollectionRepository) GetByID(id int64) model.BookCollection {
@@ -44,10 +49,15 @@ func (r *BookCollectionRepository) GetByID(id int64) model.BookCollection {
 	return collection
 }
 
-func (r *BookCollectionRepository) GetBooksForCollection(id int64) []model.Book {
+func (r *BookCollectionRepository) GetBooksForCollection(id int64, page, pageSize int) ([]model.Book, int64) {
 	var books []model.Book
-	r.db.Model(&model.Book{}).Where("collection_id = ?", id).Find(&books)
-	return books
+	var total int64
+
+	r.db.Model(&model.Book{}).Where("collection_id = ?", id).Count(&total)
+	offset := (page - 1) * pageSize
+	r.db.Where("collection_id = ?", id).Offset(offset).Limit(pageSize).Find(&books)
+
+	return books, total
 }
 
 func (r *BookCollectionRepository) AddBookToCollection(collectionId, bookId int64) {

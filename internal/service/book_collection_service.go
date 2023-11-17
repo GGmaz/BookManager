@@ -33,15 +33,16 @@ func (s *BookCollectionService) Create(collection requests.CreateBookCollectionR
 	return s.bookCollectionRepo.Create(collection.Name)
 }
 
-func (s *BookCollectionService) GetAll() []model.BookCollection {
-	return s.bookCollectionRepo.GetAll()
+func (s *BookCollectionService) GetAll(page, pageSize int) ([]model.BookCollection, int64) {
+	return s.bookCollectionRepo.GetAll(page, pageSize)
 }
 
-func (s *BookCollectionService) GetBooksForCollection(id int64) ([]model.Book, string) {
+func (s *BookCollectionService) GetBooksForCollection(id int64, page, pageSize int) ([]model.Book, int64, string) {
 	if s.bookCollectionRepo.GetByID(id).ID == 0 {
-		return nil, "Collection not found"
+		return nil, 0, "Collection not found"
 	}
-	return s.bookCollectionRepo.GetBooksForCollection(id), ""
+	books, total := s.bookCollectionRepo.GetBooksForCollection(id, page, pageSize)
+	return books, total, ""
 }
 
 func (s *BookCollectionService) AddBookToCollection(collectionId, bookId int64) string {
@@ -61,7 +62,8 @@ func (s *BookCollectionService) Delete(id int64) string {
 		return "Collection not found"
 	}
 
-	for _, book := range s.bookCollectionRepo.GetBooksForCollection(id) {
+	books, _ := s.bookCollectionRepo.GetBooksForCollection(id, 0, 0)
+	for _, book := range books {
 		s.bookCollectionRepo.RemoveBookFromCollection(book.ID)
 	}
 

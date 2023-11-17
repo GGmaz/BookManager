@@ -64,11 +64,15 @@ func (r *BookRepository) Create(title string, author string, date time.Time, edi
 	return book.ID
 }
 
-func (r *BookRepository) GetAll() []model.Book {
+func (r *BookRepository) GetAll(page, pageSize int) ([]model.Book, int64) {
 	var books []model.Book
-	r.db.Find(&books)
+	var total int64
 
-	return books
+	r.db.Model(&model.Book{}).Count(&total)
+	offset := (page - 1) * pageSize
+	r.db.Offset(offset).Limit(pageSize).Find(&books)
+
+	return books, total
 }
 
 func (r *BookRepository) GetByID(id int64) model.Book {

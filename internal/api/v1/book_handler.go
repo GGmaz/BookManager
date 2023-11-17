@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 type BookHandler struct {
@@ -54,9 +55,23 @@ func (handler *BookHandler) Create(c *gin.Context) {
 }
 
 func (handler *BookHandler) GetAll(c *gin.Context) {
-	books := handler.bookService.GetAll()
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
-	c.JSON(http.StatusOK, gin.H{"books": books})
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	books, total := handler.bookService.GetAll(page, pageSize)
+
+	c.JSON(http.StatusOK, gin.H{
+		"books": books,
+		"total": total,
+		"page":  page,
+	})
 }
 
 func (handler *BookHandler) Update(c *gin.Context) {

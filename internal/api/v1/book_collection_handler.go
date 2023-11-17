@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 type BookCollectionHandler struct {
@@ -52,9 +53,23 @@ func (handler *BookCollectionHandler) Create(c *gin.Context) {
 }
 
 func (handler *BookCollectionHandler) GetAll(c *gin.Context) {
-	bookCollections := handler.bookCollectionService.GetAll()
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
-	c.JSON(http.StatusOK, gin.H{"bookCollections": bookCollections})
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	bookCollections, total := handler.bookCollectionService.GetAll(page, pageSize)
+
+	c.JSON(http.StatusOK, gin.H{
+		"bookCollections": bookCollections,
+		"total":           total,
+		"page":            page,
+	})
 }
 
 func (handler *BookCollectionHandler) GetBooksForCollection(c *gin.Context) {
@@ -64,14 +79,28 @@ func (handler *BookCollectionHandler) GetBooksForCollection(c *gin.Context) {
 		return
 	}
 
-	books, errMessage := handler.bookCollectionService.GetBooksForCollection(req.Id)
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	books, total, errMessage := handler.bookCollectionService.GetBooksForCollection(req.Id, page, pageSize)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"books": books})
+	c.JSON(http.StatusOK, gin.H{
+		"bookCollections": books,
+		"total":           total,
+		"page":            page,
+	})
 }
 
 func (handler *BookCollectionHandler) AddBookToCollection(c *gin.Context) {

@@ -27,8 +27,8 @@ func (s *BookService) Create(book requests.CreateBookRequest) int64 {
 	return s.bookRepo.Create(book.Title, book.Author, book.PublishedDate, book.Edition, book.Description, book.Genre)
 }
 
-func (s *BookService) GetAll() []model.Book {
-	return s.bookRepo.GetAll()
+func (s *BookService) GetAll(page, pageSize int) ([]model.Book, int64) {
+	return s.bookRepo.GetAll(page, pageSize)
 }
 
 func (s *BookService) Update(id int64, book requests.UpdateBookRequest) string {

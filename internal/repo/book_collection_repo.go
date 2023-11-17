@@ -49,13 +49,27 @@ func (r *BookCollectionRepository) GetByID(id int64) model.BookCollection {
 	return collection
 }
 
-func (r *BookCollectionRepository) GetBooksForCollection(id int64, page, pageSize int) ([]model.Book, int64) {
+func (r *BookCollectionRepository) GetBooksForCollection(id int64, page, pageSize int, author, genre, startDate, endDate string) ([]model.Book, int64) {
 	var books []model.Book
 	var total int64
 
-	r.db.Model(&model.Book{}).Where("collection_id = ?", id).Count(&total)
+	query := r.db.Model(&model.Book{}).Where("collection_id = ?", id)
+
+	if author != "" {
+		query = query.Where("author LIKE ?", "%"+author+"%")
+	}
+
+	if genre != "" {
+		query = query.Where("genre = ?", genre)
+	}
+
+	if startDate != "" && endDate != "" {
+		query = query.Where("published_date BETWEEN ? AND ?", startDate, endDate)
+	}
+
+	query.Count(&total)
 	offset := (page - 1) * pageSize
-	r.db.Where("collection_id = ?", id).Offset(offset).Limit(pageSize).Find(&books)
+	query.Offset(offset).Limit(pageSize).Find(&books)
 
 	return books, total
 }

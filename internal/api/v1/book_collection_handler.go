@@ -81,6 +81,10 @@ func (handler *BookCollectionHandler) GetBooksForCollection(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
+	author := c.Query("author")
+	genre := c.Query("genre")
+	startDate := c.Query("startDate")
+	endDate := c.Query("endDate")
 
 	if page <= 0 {
 		page = 1
@@ -89,7 +93,7 @@ func (handler *BookCollectionHandler) GetBooksForCollection(c *gin.Context) {
 		pageSize = 10
 	}
 
-	books, total, errMessage := handler.bookCollectionService.GetBooksForCollection(req.Id, page, pageSize)
+	books, total, errMessage := handler.bookCollectionService.GetBooksForCollection(req.Id, page, pageSize, author, genre, startDate, endDate)
 
 	if errMessage != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})

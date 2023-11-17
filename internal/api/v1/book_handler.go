@@ -57,6 +57,10 @@ func (handler *BookHandler) Create(c *gin.Context) {
 func (handler *BookHandler) GetAll(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
+	author := c.Query("author")
+	genre := c.Query("genre")
+	startDate := c.Query("startDate")
+	endDate := c.Query("endDate")
 
 	if page <= 0 {
 		page = 1
@@ -65,7 +69,7 @@ func (handler *BookHandler) GetAll(c *gin.Context) {
 		pageSize = 10
 	}
 
-	books, total := handler.bookService.GetAll(page, pageSize)
+	books, total := handler.bookService.GetAll(page, pageSize, author, genre, startDate, endDate)
 
 	c.JSON(http.StatusOK, gin.H{
 		"books": books,

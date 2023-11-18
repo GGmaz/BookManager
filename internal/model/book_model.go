@@ -5,11 +5,11 @@ import "time"
 type Book struct {
 	ID            int64     `json:"id"`
 	Title         string    `json:"title"`
-	Author        string    `json:"author"`
+	Author        string    `json:"author" gorm:"index"`
 	PublishedDate time.Time `json:"publishedDate"`
 	Edition       string    `json:"edition"`
 	Description   string    `json:"description"`
-	Genre         string    `json:"genre"`
+	Genre         string    `json:"genre" gorm:"index"`
 	CollectionId  *int64    `json:"collectionId"`
 }
 
